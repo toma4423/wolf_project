@@ -1,0 +1,70 @@
+C:\Users\ikai0700275\Desktop\python_script\wolf_project>python -m unittest tests/test_core.py -v
+test_add_player (tests.test_core.TestGameState.test_add_player)
+プレイヤー追加のテスト ... ok
+test_initial_state (tests.test_core.TestGameState.test_initial_state)
+初期状態のテスト ... ok
+test_phase_transition (tests.test_core.TestGameState.test_phase_transition)
+フェーズ遷移のテスト ... ok
+test_player_kill (tests.test_core.TestGameState.test_player_kill)
+プレイヤー死亡処理のテスト ... ok
+test_remove_player (tests.test_core.TestGameState.test_remove_player)
+プレイヤー削除のテスト ... ok
+test_team_counts (tests.test_core.TestGameState.test_team_counts)
+チーム別人数カウントのテスト ... FAIL
+test_event_handling (tests.test_core.TestGlobalDataStore.test_event_handling)
+イベントハンドリングのテスト ... ERROR:root:Error handling event player_role_assigned: type object 'EventType' has no attribute 'GAME_RESET'
+ERROR:root:Error handling event player_added: type object 'EventType' has no attribute 'GAME_RESET'  
+ERROR:root:Error handling game start: 'GlobalDataStore' object has no attribute '_notify_observers'  
+ERROR:root:Error handling player death: 'GlobalDataStore' object has no attribute '_notify_observers'
+FAIL
+test_game_log (tests.test_core.TestGlobalDataStore.test_game_log)
+ゲームログのテスト ... ERROR:root:Error handling event game_log_updated: type object 'EventType' has no attribute 'GAME_RESET'
+ERROR:root:Error adding game log: 'GlobalDataStore' object has no attribute '_notify_observers'      
+ok
+test_initial_state (tests.test_core.TestGlobalDataStore.test_initial_state)
+初期状態のテスト ... ok
+test_regulation_validation (tests.test_core.TestGlobalDataStore.test_regulation_validation)
+レギュレーションバリデーションのテスト ... ok
+test_singleton (tests.test_core.TestGlobalDataStore.test_singleton)
+シングルトンパターンのテスト ... ok
+test_initial_state (tests.test_core.TestPlayer.test_initial_state)
+初期状態のテスト ... ok
+test_kill (tests.test_core.TestPlayer.test_kill)
+死亡処理のテスト ... ok
+test_role_assignment (tests.test_core.TestPlayer.test_role_assignment)
+役職割り当てのテスト ... ERROR:root:Error handling event player_role_assigned: type object 'EventType' has no attribute 'GAME_RESET'
+ERROR:root:Invalid role assignment for player test_player: invalid_role
+ok
+
+======================================================================
+FAIL: test_team_counts (tests.test_core.TestGameState.test_team_counts)
+チーム別人数カウントのテスト
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\ikai0700275\Desktop\python_script\wolf_project\tests\test_core.py", line 111, in test_team_counts
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        counts[Team.VILLAGE.value], 1, "Village team count should be 1"
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+AssertionError: 2 != 1 : Village team count should be 1
+
+======================================================================
+FAIL: test_event_handling (tests.test_core.TestGlobalDataStore.test_event_handling)
+イベントハンドリングのテスト
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\ikai0700275\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py", line 1423, in patched
+    return func(*newargs, **newkeywargs)
+  File "C:\Users\ikai0700275\Desktop\python_script\wolf_project\tests\test_core.py", line 184, in test_event_handling
+    mock_event_manager.notify.assert_called()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ikai0700275\AppData\Local\Programs\Python\Python313\Lib\unittest\mock.py", line 946, in assert_called
+    raise AssertionError(msg)
+AssertionError: Expected 'notify' to have been called.
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.015s
+
+FAILED (failures=2)

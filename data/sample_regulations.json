@@ -1,0 +1,65 @@
+{
+  "13_アルテ": {
+    "roles": {
+      "villager": 6,
+      "werewolf": 3,
+      "seer": 1,
+      "medium": 1,
+      "guard": 1,
+      "madman": 1
+    },
+    "round_times": [
+      {
+        "round": 1,
+        "time": 3
+      },
+      {
+        "round": 2,
+        "time": 3
+      },
+      {
+        "round": 3,
+        "time": 3
+      },
+      {
+        "round": 4,
+        "time": 3
+      }
+    ],
+    "total_players": 13
+  },
+  "13_ult": {
+    "roles": {
+      "villager": 6,
+      "werewolf": 3,
+      "seer": 1,
+      "medium": 1,
+      "guard": 1,
+      "madman": 1
+    },
+    "round_times": [
+      {
+        "round": 1,
+        "time": 3
+      }
+    ],
+    "total_players": 13
+  },
+  "9_st": {
+    "roles": {
+      "villager": 3,
+      "werewolf": 2,
+      "seer": 1,
+      "medium": 1,
+      "guard": 1,
+      "madman": 1
+    },
+    "round_times": [
+      {
+        "round": 1,
+        "time": 3
+      }
+    ],
+    "total_players": 9
+  }
+}
