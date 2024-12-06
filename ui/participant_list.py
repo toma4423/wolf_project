@@ -97,12 +97,35 @@ class ParticipantListWindow:
         tree.heading("role", text="役職")
         tree.heading("status", text="ステータス")
 
-        # 列幅の比率を設定
-        total_width = 400 - 20  # スクロールバーのスペースを考慮
-        tree.column("number", width=int(total_width * 0.1))  # 10%
-        tree.column("name", width=int(total_width * 0.4))  # 40%
-        tree.column("role", width=int(total_width * 0.25))  # 25%
-        tree.column("status", width=int(total_width * 0.25))  # 25%
+        # 列幅の動的設定用関数
+        def configure_column_widths(event=None):
+            if not tree.winfo_exists():
+                return
+
+            tree_width = tree.winfo_width()
+            if tree_width > 1:  # 有効な幅の場合のみ処理
+                scrollbar_width = 20
+                available_width = max(tree_width - scrollbar_width, 380)  # 最小幅を確保
+
+                # 列幅の比率配分
+                widths = {
+                    "number": 0.15,  # 15%
+                    "name": 0.35,  # 35%
+                    "role": 0.25,  # 25%
+                    "status": 0.25,  # 25%
+                }
+
+                # 各列の幅を設定
+                for column, ratio in widths.items():
+                    width = int(available_width * ratio)
+                    tree.column(column, width=width, minwidth=int(width * 0.8))
+
+        # ウィンドウサイズ変更時のイベントバインド
+        tree.bind("<Configure>", configure_column_widths)
+
+        # 初期サイズの設定
+        tree.update_idletasks()
+        configure_column_widths()
 
         # イベントバインド
         tree.bind("<Button-3>", self._show_context_menu)
