@@ -333,20 +333,28 @@ class GameState:
     def reset(self) -> None:
         """ゲーム状態のリセット"""
         try:
-            self.players.clear()
-            self.alive_players.clear()
-            self.current_phase = GamePhase.SETUP
-            self.current_round = 0
-            self.regulation = None
+            # 確定状態のみリセット
             self.game_active = False
             self.is_regulation_confirmed = False
             self.is_players_confirmed = False
-            self._state_history.clear()
 
-            # イベント通知を削除（ここが重要）
-            # event_manager.notify(
-            #     GameEvent(type=EventType.GAME_STATE_RESET, data={}, source="game_state")
-            # )
+            # フェーズとラウンドをリセット
+            self.current_phase = GamePhase.SETUP
+            self.current_round = 0
+
+            # プレイヤー状態のリセット（役職と生存状態のみ）
+            for player in self.players.values():
+                player.role = None
+                player.is_alive = True
+
+            # 生存プレイヤーリストをクリア
+            self.alive_players.clear()
+
+            # レギュレーションをクリア
+            self.regulation = None
+
+            # 履歴をクリア
+            self._state_history.clear()
 
             self._save_snapshot("game_reset")
             self.logger.info("Game state reset")

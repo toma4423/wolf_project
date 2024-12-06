@@ -189,19 +189,28 @@ class GameProgressWindow:
     def _update_player_lists(self) -> None:
         """プレイヤーリストの更新"""
         try:
+            if not hasattr(self, "window") or not self.window.winfo_exists():
+                return
+
             # 生存プレイヤーのリストを取得
             alive_players = self.store.game_state.get_alive_players_list()
             choices = ["対象なし"] + alive_players
 
             # 各コンボボックスの更新
-            for combo in self.action_combos.values():
-                current_value = combo.get()
-                combo["values"] = choices
-                # 既存の選択を保持（有効な場合のみ）
-                if current_value in choices:
-                    combo.set(current_value)
-                else:
-                    combo.set("対象なし")
+            for combo_name, combo in self.action_combos.items():
+                if not hasattr(combo, "winfo_exists") or not combo.winfo_exists():
+                    continue
+
+                try:
+                    current_value = combo.get()
+                    combo["values"] = choices
+                    # 既存の選択を保持（有効な場合のみ）
+                    if current_value in choices:
+                        combo.set(current_value)
+                    else:
+                        combo.set("対象なし")
+                except tk.TclError:
+                    continue
 
             self.logger.debug(
                 f"Updated player lists with {len(alive_players)} alive players"
@@ -209,7 +218,6 @@ class GameProgressWindow:
 
         except Exception as e:
             self.logger.error(f"Error updating player lists: {str(e)}")
-            self._show_error("プレイヤーリストの更新中にエラーが発生しました。")
 
     def _clear_selections(self) -> None:
         """選択状態のクリア"""
@@ -472,6 +480,9 @@ class GameProgressWindow:
     def _proceed_to_next_round(self) -> None:
         """次のラウンドへの移行"""
         try:
+            if not hasattr(self, "window") or not self.window.winfo_exists():
+                return
+
             # GameStateの更新を先に行う
             self.store.game_state.next_round()
 
@@ -479,13 +490,19 @@ class GameProgressWindow:
             self.state.current_round = self.store.game_state.current_round
             self.state.current_phase = self.store.game_state.current_phase
 
-            # UI更新
-            self._update_phase_display()
+            # UI更新前の存在確認
+            if all(
+                hasattr(self, frame) and getattr(self, frame).winfo_exists()
+                for frame in ["day_frame", "night_frame"]
+            ):
+                self._update_phase_display()
 
             self.logger.info(f"Proceeded to next round: {self.state.current_round}")
+        except tk.TclError:
+            # ウィンドウが既に破棄されている場合
+            return
         except Exception as e:
             self.logger.error(f"Error proceeding to next round: {str(e)}")
-            raise
 
     def handle_event(self, event: GameEvent) -> None:
         """イベントハンドラ"""
@@ -510,12 +527,26 @@ class GameProgressWindow:
     def _handle_phase_change(self, event: GameEvent) -> None:
         """フェーズ変更イベントの処理"""
         try:
+            if not hasattr(self, "window") or not self.window.winfo_exists():
+                return
+
             self.state.current_phase = GamePhase(event.data.get("new_phase"))
-            self._update_phase_display()
+
+            # UI更新前にウィンドウとフレームの存在確認
+            if (
+                hasattr(self, "day_frame")
+                and hasattr(self, "night_frame")
+                and self.day_frame.winfo_exists()
+                and self.night_frame.winfo_exists()
+            ):
+                self._update_phase_display()
+
             self.logger.info(f"Phase changed to: {self.state.current_phase.value}")
+        except tk.TclError:
+            # ウィンドウが既に破棄されている場合
+            return
         except Exception as e:
             self.logger.error(f"Error handling phase change: {str(e)}")
-            raise
 
     def _handle_player_death(self, event: GameEvent) -> None:
         """プレイヤー死亡イベントの処理"""
@@ -526,10 +557,25 @@ class GameProgressWindow:
 
     def _handle_round_change(self, event: GameEvent) -> None:
         """ラウンド変更イベントの処理"""
-        self.state.current_round = event.data.get("round", 0)
-        time_limit = self._get_round_time()
-        self.time_label.config(text=f"残り時間: {self._format_time(time_limit)}")
-        self.logger.info(f"Round changed to: {self.state.current_round}")
+        try:
+            if not hasattr(self, "window") or not self.window.winfo_exists():
+                return
+
+            self.state.current_round = event.data.get("round", 0)
+
+            # time_labelの存在確認を追加
+            if hasattr(self, "time_label") and self.time_label.winfo_exists():
+                time_limit = self._get_round_time()
+                self.time_label.config(
+                    text=f"残り時間: {self._format_time(time_limit)}"
+                )
+
+            self.logger.info(f"Round changed to: {self.state.current_round}")
+        except tk.TclError:
+            # ウィンドウが既に破棄されている場合
+            return
+        except Exception as e:
+            self.logger.error(f"Error handling round change: {str(e)}")
 
     def _handle_game_state_update(self, event: GameEvent) -> None:
         """ゲーム状態更新イベントの処理"""

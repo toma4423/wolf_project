@@ -316,27 +316,17 @@ class GlobalDataStore:
     def _handle_game_reset(self, event: GameEvent) -> None:
         """ゲームリセットイベントの処理"""
         try:
-            # プレイヤー情報をバックアップ
-            backup_players = self.game_state.players.copy()
-            backup_participants = self.session_data["session_players"].copy()
-
             # ゲーム状態をリセット
             self.game_state.reset()
 
-            # プレイヤー情報を復元（ただし未確定状態で）
-            self.game_state.players = backup_players
-            self.session_data["session_players"] = backup_participants
-            self.game_state.is_players_confirmed = False
-            self.game_state.is_regulation_confirmed = False
-
-            # 他の状態をリセット
+            # ゲームログをクリア
             self.game_log.clear()
 
             # オブザーバーに通知
             self._notify_observers("game_state")
             self._notify_observers("game_log")
 
-            self.logger.info("Game state reset with preserved player information")
+            self.logger.info("Game state reset completed")
 
         except Exception as e:
             self.logger.error(f"Error handling game reset: {str(e)}")

@@ -351,11 +351,15 @@ class GMMainWindow:
     def _end_game(self) -> None:
         """ゲームを終了する"""
         try:
-            if not messagebox.askyesno("確認", "ゲームを終了しますか？"):
+            if not messagebox.askyesno(
+                "確認", "当該ゲームを終了します。よろしいですか？"
+            ):
                 return
 
-            # 全てのウィンドウをリセット
-            self._reset_windows()
+            # ゲーム進行ウィンドウのみを閉じる
+            if self.sub_windows.get("game_progress"):
+                self.sub_windows["game_progress"].destroy()
+                self.sub_windows["game_progress"] = None
 
             # 状態のリセット
             self.state = GMWindowState()
@@ -366,11 +370,11 @@ class GMMainWindow:
                 "ゲームを終了しました。参加者とレギュレーションを確定してください。"
             )
 
-            # イベント通知
+            # ゲームリセットイベントの発行（WindowReset用のフラグを追加）
             event_manager.notify(
                 GameEvent(
                     type=EventType.GAME_STATE_RESET,
-                    data={"reason": "manual_end"},
+                    data={"reason": "manual_end", "preserve_windows": True},
                     source="gm_window",
                 )
             )
@@ -481,12 +485,10 @@ class GMMainWindow:
     def _handle_game_ended(self, event: GameEvent) -> None:
         """ゲーム終了イベントの処理"""
         try:
-            winning_team = event.data.get("winning_team")
-            if messagebox.askyesno(
-                "ゲーム終了",
-                f"{winning_team}チームの勝利です。\nメインメニューに戻りますか？",
-            ):
-                self._end_game()
+            # 人狼全滅の場合のみ通知
+            if event.data.get("werewolf_count", 0) == 0:
+                messagebox.showinfo("ゲーム終了", "全ての人狼が死亡しました。")
+                self.logger.info("Game ended: All werewolves are dead")
         except Exception as e:
             self.logger.error(f"Error handling game end: {str(e)}")
 

@@ -560,3 +560,30 @@ class RegulationSettingWindow:
                 event_manager.unsubscribe_all(self)
         except Exception as e:
             self.logger.error(f"Error destroying window: {str(e)}")
+
+    def _reset_ui_state(self) -> None:
+        """UIの状態をリセット"""
+        try:
+            # 確定状態の解除
+            self.state.is_confirmed = False
+
+            # 役職設定の有効化
+            for spinbox in self.role_spinboxes.values():
+                if spinbox.winfo_exists():
+                    spinbox.config(state="normal")
+                    spinbox.set("0")
+
+            # ラウンド設定のリセット
+            self._clear_rounds()
+            self._add_round()  # 初期ラウンドを追加
+
+            # 合計人数の更新
+            self._update_total_count()
+
+            self.logger.info("Regulation setting UI reset successfully")
+
+        except tk.TclError:
+            # ウィンドウが既に破棄されている場合
+            return
+        except Exception as e:
+            self.logger.error(f"Error resetting regulation UI: {str(e)}")
