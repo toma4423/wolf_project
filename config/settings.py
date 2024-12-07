@@ -1,15 +1,25 @@
 # Application-wide settings
-
-from pathlib import Path
+import os
+import sys
 import logging
+from pathlib import Path
 from typing import Dict, Any
 
-# プロジェクトのルートディレクトリを取得
-ROOT_DIR = Path(__file__).parent.parent
 
-# 各種ディレクトリパスの設定
-LOGS_DIR = ROOT_DIR / "logs"
-DATA_DIR = ROOT_DIR / "data"
+def get_base_path() -> Path:
+    """アプリケーションのルートパスを取得"""
+    if getattr(sys, "frozen", False):
+        # PyInstallerでビルドされた場合
+        return Path(sys._MEIPASS)
+    else:
+        # 通常の実行の場合
+        return Path(__file__).parent.parent
+
+
+# プロジェクトのルートディレクトリを取得
+BASE_DIR = get_base_path()
+LOGS_DIR = BASE_DIR / "logs"
+DATA_DIR = BASE_DIR / "data"
 
 # アプリケーション設定
 APP_SETTINGS: Dict[str, Any] = {
@@ -60,29 +70,36 @@ ROLE_SETTINGS = {
     },
 }
 
-# ゲームフェーズ設定
-# GAME_PHASES = {
-#    "setup": "設定",
-#    "day_discussion": "昼の議論",
-#    "day_vote": "処刑投票",
-#    "night": "夜の行動",
-#    "game_end": "ゲーム終了",
-# }
 
-
-# ロギング設定
 def setup_logging():
     """ロギングの初期設定を行う"""
-    LOGS_DIR.mkdir(exist_ok=True)
-    logging.basicConfig(
-        filename=LOGS_DIR / "app.log",
-        level=logging.INFO,
-        format=APP_SETTINGS["log_format"],
-    )
+    try:
+        # logsディレクトリを作成
+        os.makedirs(LOGS_DIR, exist_ok=True)
 
-    # コンソールへのハンドラも追加
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter(APP_SETTINGS["log_format"])
-    console_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(console_handler)
+        log_path = LOGS_DIR / "app.log"
+
+        # ファイルハンドラの設定
+        file_handler = logging.FileHandler(str(log_path), encoding="utf-8")
+        file_handler.setLevel(logging.INFO)
+        file_formatter = logging.Formatter(APP_SETTINGS["log_format"])
+        file_handler.setFormatter(file_formatter)
+
+        # コンソールハンドラの設定
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.INFO)
+        console_formatter = logging.Formatter(APP_SETTINGS["log_format"])
+        console_handler.setFormatter(console_formatter)
+
+        # ルートロガーの設定
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.INFO)
+        root_logger.addHandler(file_handler)
+        root_logger.addHandler(console_handler)
+
+        logging.info("Logging setup completed successfully")
+
+    except Exception as e:
+        print(f"Error setting up logging: {str(e)}")
+        # 最低限のコンソール出力は確保
+        logging.basicConfig(level=logging.INFO, format=APP_SETTINGS["log_format"])

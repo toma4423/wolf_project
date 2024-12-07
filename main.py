@@ -1,27 +1,15 @@
 # Entry point for the application
-
 import tkinter as tk
-
-# import logging
 from pathlib import Path
 from config.settings import setup_logging
 from store.global_data_store import GlobalDataStore
 from ui.entry_point import EntryPointWindow
-
-# main.pyまたはエントリーポイントで
 import logging
-
-logging.basicConfig(
-    filename="logs/app.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    encoding="utf-8",  # エンコーディングを明示的に指定
-)
 
 
 def main():
     """アプリケーションのメインエントリーポイント"""
-    # ロギングの設定
+    # ロギングの設定（ここでのみ設定）
     setup_logging()
     logging.info("Application starting...")
 

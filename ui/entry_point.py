@@ -12,17 +12,6 @@ from core.game_state import GameState
 from ui.gm_mode_main import GMMainWindow
 
 
-# main.pyまたはエントリーポイントで
-# import logging
-
-logging.basicConfig(
-    filename="logs/app.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    encoding="utf-8",  # エンコーディングを明示的に指定
-)
-
-
 @dataclass
 class AppState:
     """アプリケーションの状態を管理するデータクラス"""
@@ -271,10 +260,7 @@ class EntryPointWindow:
         """ゲーム終了イベントの処理"""
         try:
             self.logger.info("Game ended")
-            if messagebox.askyesno(
-                "確認", "ゲームが終了しました。メインメニューに戻りますか？"
-            ):
-                self._return_to_main_menu()
+            # メインメニューに戻る処理を削除し、ログ記録のみ行う
         except Exception as e:
             self.logger.error(f"Error handling game end: {str(e)}")
             raise
