@@ -1,18 +1,1 @@
-はい、`game_state.py`を確認しました。
-WarningについてはGameStateクラスの`change_phase`メソッドで出力されているものですね：
-
-```python
-if not self.game_active:
-    self.logger.warning("Cannot change phase: Game is not active")
-    return
-```
-
-このWarningは、プレイヤーが死亡して`_check_game_end_condition`で`GAME_ENDED`イベントが発行された後、`game_active`が`False`になっているのにも関わらず、処刑アクションの完了処理で`_change_to_night_phase`が呼び出されているために発生していると思われます。
-
-この動作を確認するために`game_progress.py`の`_confirm_execution`メソッドと`_execute_player`メソッドを確認させていただけますでしょうか？
-
-この問題を解決するには、人狼全滅やゲーム終了後のフェーズ変更を防ぐ必要があります。
-
-#現在抱えている修正内容
-game_state.pyにて修正が必要となっています。
-レベルがwarningになっているため緊急性は低いと思われますが修正を行う予定です。
+トラブルがあったら記述する場所
