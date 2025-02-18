@@ -271,7 +271,7 @@ class GameState:
                 raise ValueError("Cannot start: Regulation not confirmed")
             if not self.is_players_confirmed:
                 raise ValueError("Cannot start: Players not confirmed")
-            if not self._validate_player_count():
+            if len(self.players) != self.regulation.num_players:
                 raise ValueError("Cannot start: Player count does not match regulation")
 
             self.alive_players = set(self.players.keys())
@@ -306,7 +306,7 @@ class GameState:
         try:
             # レギュレーションから役職リストを作成
             roles_to_assign = []
-            for role, count in self.regulation["roles"].items():
+            for role, count in self.regulation.roles.items():
                 roles_to_assign.extend([PlayerRole(role)] * count)
 
             # 役職をシャッフル

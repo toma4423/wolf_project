@@ -26,6 +26,7 @@ class GlobalDataStore:
 
         # ゲーム状態の管理
         self.game_state = GameState()
+        self.event_manager = event_manager
 
         # セッション管理
         self.session_data = {
@@ -291,6 +292,11 @@ class GlobalDataStore:
             self.game_state.kill_player(player_name)
             self._notify_observers("alive_players")
             self._notify_observers("game_state")
+            self.event_manager.notify(
+                GameEvent(
+                    type=EventType.GAME_STATE_UPDATED, data={"player": player_name}
+                )
+            )
 
     def _handle_phase_change(self, event: GameEvent) -> None:
         """フェーズ変更イベントの処理"""
@@ -380,3 +386,10 @@ class GlobalDataStore:
         except Exception as e:
             self.logger.error(f"Error registering session player: {str(e)}")
             raise
+
+    def reset_game(self):
+        from core.game_state import GameState
+
+        self.game_state = GameState()
+        self.game_log = []
+        self.regulation = None
